@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasyno Plinko</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #222, #111);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 1rem;
+      font-size: 2rem;
+      font-weight: bold;
+      color: gold;
+    }
+
+    #board {
+      position: relative;
+      width: 300px;
+      height: 400px;
+      background-color: #333;
+      border: 2px solid gold;
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+
+    .peg {
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .ball {
+      width: 15px;
+      height: 15px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 145px;
+    }
+
+    .slot {
+      position: absolute;
+      bottom: 0;
+      width: 50px;
+      height: 40px;
+      border-top: 2px solid gold;
+      text-align: center;
+      line-height: 40px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      background-color: gold;
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>🎰 Kasyno Plinko</header>
+  <div id="board"></div>
+  <button onclick="dropBall()">Rzuć kulkę</button>
+  <div id="result"></div>
+
+  <script>
+    const board = document.getElementById("board");
+    const result = document.getElementById("result");
+    const cols = 6;
+    const rows = 8;
+    const slotRewards = [0, 2, 5, 10, 5, 2];
+
+    // Tworzenie kołków
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols - (y % 2); x++) {
+        const peg = document.createElement("div");
+        peg.classList.add("peg");
+        peg.style.left = `${25 + x * 50 + (y % 2 ? 25 : 0)}px`;
+        peg.style.top = `${50 + y * 40}px`;
+        board.appendChild(peg);
+      }
+    }
+
+    // Tworzenie slotów
+    for (let i = 0; i < cols; i++) {
+      const slot = document.createElement("div");
+      slot.classList.add("slot");
+      slot.style.left = `${i * 50}px`;
+      slot.textContent = `${slotRewards[i]}x`;
+      board.appendChild(slot);
+    }
+
+    function dropBall() {
+      const ball = document.createElement("div");
+      ball.classList.add("ball");
+      board.appendChild(ball);
+
+      let x = 2.5; // środek
+      let y = 0;
+
+      const interval = setInterval(() => {
+        if (y >= rows) {
+          clearInterval(interval);
+          const slotIndex = Math.round(x);
+          const reward = slotRewards[slotIndex];
+          result.textContent = `Wypadło do ${slotIndex + 1} slota: Wygrana ${reward}x!`;
+          return;
+        }
+
+        x += Math.random() < 0.5 ? -0.5 : 0.5;
+        x = Math.max(0, Math.min(cols - 1, x));
+        y++;
+
+        ball.style.top = `${y * 40}px`;
+        ball.style.left = `${x * 50 + 17}px`;
+      }, 200);
+    }
+  </script>
+</body>
+</html>
